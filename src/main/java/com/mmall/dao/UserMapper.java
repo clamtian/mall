@@ -27,4 +27,8 @@ public interface UserMapper {
     int updatePasswordByUsername(String username,String MD5password);
 
     String selectQuestionByUsername(@Param("username") String username);
+
+    int checkPassword(Integer id,String password);
+
+    int checkEmailByUserId(String email,Integer id);
 }
