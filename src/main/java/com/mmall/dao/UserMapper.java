@@ -22,13 +22,13 @@ public interface UserMapper {
 
     int checkEmail(String email);
 
-    int checkAnswer(String username,String question,String answer);
+    int checkAnswer(@Param("username")String username,@Param("question")String question,@Param("answer")String answer);
 
-    int updatePasswordByUsername(String username,String MD5password);
+    int updatePasswordByUsername(@Param("username")String username,@Param("passwordNew")String passwordNew);
 
     String selectQuestionByUsername(@Param("username") String username);
 
-    int checkPassword(Integer id,String password);
+    int checkPassword(@Param("id") Integer id,@Param("password") String password);
 
-    int checkEmailByUserId(String email,Integer id);
+    int checkEmailByUserId(@Param("email") String email,@Param("id") Integer id);
 }

@@ -35,8 +35,8 @@
       update_time)
     values (#{id,jdbcType=INTEGER}, #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, 
       #{email,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, #{question,jdbcType=VARCHAR}, 
-      #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, #{createTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP})
+      #{answer,jdbcType=VARCHAR}, #{role,jdbcType=INTEGER}, now(),
+      now())
   </insert>
   <insert id="insertSelective" parameterType="com.mmall.pojo.User" >
     insert into mmall_user
@@ -167,11 +167,15 @@
   SELECT question FROM mmall_user WHERE username = #{username}
   </select>
   <select id="checkAnswer" resultType="int" parameterType="string">
-    SELECT count(1) FROM mmall_user WHERE username = #{username}
-    and question = #{question} and answer = #{amswer}
+    SELECT
+    count(1)
+    from mmall_user
+    where username=#{username}
+    and question = #{question}
+    and answer = #{answer}
   </select>
-  <update id="updatePasswordByUsername" parameterType="string">
-  UPDATE mmall_user SET password = #{MD5password},update_time = now()
+  <update id="updatePasswordByUsername"  parameterType="map">
+  UPDATE mmall_user SET password = #{passwordNew},update_time = now()
   where username = #{username}
   </update>
   <select id="checkPassword" resultType="int" parameterType="map">

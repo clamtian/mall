@@ -29,7 +29,7 @@ public class UserServiceImpl implements IUserService{
         }
         User user = userMapper.selectLogin(username,MD5Util.MD5EncodeUtf8(password));
         if(user == null){
-            ServerResponse.createByErrorMessage("密码错误");
+            return ServerResponse.createByErrorMessage("密码错误");
         }
         user.setPassword(org.apache.commons.lang3.StringUtils.EMPTY);
         return ServerResponse.createBySuccess("登陆成功",user);
@@ -46,6 +46,7 @@ public class UserServiceImpl implements IUserService{
             return vaildResponse;
         }
         user.setRole(Const.Role.ROLE_CUSTOMER);
+
         user.setPassword(MD5Util.MD5EncodeUtf8(user.getPassword()));
         int resultCount = userMapper.insert(user);
         if(resultCount == 0){
@@ -62,10 +63,11 @@ public class UserServiceImpl implements IUserService{
                 if(resultCount > 0){
                     return ServerResponse.createByErrorMessage("用户已存在");
                 }
-            }else if(Const.EMAIL.equals(type)){
-                int count = userMapper.checkEmail(str);
-                if(count != 0){
-                    ServerResponse.createByErrorMessage("邮箱已注册");
+            }
+            if(Const.EMAIL.equals(type)){
+                int resultCount = userMapper.checkEmail(str);
+                if(resultCount > 0){
+                    return ServerResponse.createByErrorMessage("邮箱已注册");
                 }
             }
         }else{
@@ -76,8 +78,8 @@ public class UserServiceImpl implements IUserService{
 
     @Override
     public ServerResponse<String> selectQuestion(String username) {
-        ServerResponse response = checkValid(username,Const.USERNAME);
-        if(!response.isSuccess()){
+        ServerResponse response = this.checkValid(username,Const.USERNAME);
+        if(response.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
         }
         String question = userMapper.selectQuestionByUsername(username);
@@ -88,26 +90,27 @@ public class UserServiceImpl implements IUserService{
     }
 
     @Override
-    public ServerResponse<String> checkAnswer(String username, String question, String answer) {
-        int selectCount = userMapper.checkAnswer(username,question,answer);
-        if(selectCount == 0){
-            return ServerResponse.createByErrorMessage("答案错误");
+    public ServerResponse<String> checkAnswer(String username,String question,String answer){
+        int resultCount = userMapper.checkAnswer(username,question,answer);
+        if(resultCount > 0){
+            //说明问题及问题答案是这个用户的,并且是正确的
+            String forgetToken = UUID.randomUUID().toString();
+            TokenCache.setKey(TokenCache.TOKEN_PREFIX+username,forgetToken);
+            return ServerResponse.createBySuccess(forgetToken);
         }
-        String forgetToken = UUID.randomUUID().toString();
-        TokenCache.setKey(TokenCache.TOKEN_PREFIX+username,forgetToken);
-        return ServerResponse.createBySuccess(forgetToken);
+        return ServerResponse.createByErrorMessage("问题的答案错误");
     }
     @Override
     public ServerResponse<String> forgetResetPassword(String username, String passwordNew, String forgetToken) {
-        if(StringUtils.isNotBlank(forgetToken)){
+        if(StringUtils.isBlank(forgetToken)){
             return ServerResponse.createByErrorMessage("参数错误，token需要传递");
         }
         ServerResponse response = this.checkValid(username, Const.USERNAME);
-        if(!response.isSuccess()){
+        if(response.isSuccess()){
             return ServerResponse.createByErrorMessage("用户不存在");
         }
         String token = TokenCache.getKey(TokenCache.TOKEN_PREFIX+username);
-        if(StringUtils.isNotBlank(token)){
+        if(StringUtils.isBlank(token)){
             return ServerResponse.createByErrorMessage("token过期或无效");
         }
         if(StringUtils.equals(forgetToken,token)){
