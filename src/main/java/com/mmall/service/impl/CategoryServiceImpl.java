@@ -82,7 +82,7 @@ public class CategoryServiceImpl implements ICategoryService{
     public ServerResponse findChildrenIds(Set categoryIdsSet,Integer categoryId){
         Category category = categoryMapper.selectByPrimaryKey(categoryId);
         if(category == null){
-            return ServerResponse.createByErrorMessage("查询失败，无此品类");
+            return ServerResponse.createByErrorMessage("查询失败，没有此品类");
         }
         categoryIdsSet.add(category);
         List<Category> categoryList = categoryMapper.selectCategoryChildrenByParentId(category.getId());
