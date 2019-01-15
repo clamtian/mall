@@ -118,6 +118,5 @@
   </update>
   <select id="selectCategoryChildrenByParentId" parameterType="int" resultMap="BaseResultMap">
     SELECT <include refid="Base_Column_List"/> From mmall_category WHERE parent_id = #{categoryId}
-
   </select>
 </mapper>

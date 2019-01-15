@@ -1,5 +1,7 @@
 package com.mmall.service.impl;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.mmall.common.Const;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CategoryMapper;
@@ -9,7 +11,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by lucky on 2019/1/15.
@@ -41,5 +45,50 @@ public class CategoryServiceImpl implements ICategoryService{
             return ServerResponse.createBySuccessMessage("添加成功");
         }
         return ServerResponse.createByErrorMessage("添加失败");
+    }
+
+    @Override
+    public ServerResponse<String> setCategoryName(Integer categoryId, String categoryName) {
+        if(categoryId == null || StringUtils.isBlank(categoryName)){
+            return ServerResponse.createByErrorMessage("参数错误");
+        }
+        Category category = new Category();
+        category.setName(categoryName);
+        category.setId(categoryId);
+        int rowCount = categoryMapper.updateByPrimaryKeySelective(category);
+        if(rowCount > 0){
+            return ServerResponse.createBySuccessMessage("更新成功");
+        }
+        return ServerResponse.createByErrorMessage("更新失败");
+    }
+
+    @Override
+    public ServerResponse<List<Integer>> getDeepCategory(Integer categoryId) {
+        if(categoryId == null){
+            return ServerResponse.createByErrorMessage("参数错误");
+        }
+        Set<Category> categoryIdsSet = Sets.newHashSet();
+        ServerResponse response = findChildrenIds(categoryIdsSet,categoryId);
+        if(!response.isSuccess()){
+            return response;
+        }
+        List<Integer> categoryIds = Lists.newArrayList();
+        for(Category category : categoryIdsSet){
+            categoryIds.add(category.getId());
+        }
+        return ServerResponse.createBySuccess("查询成功",categoryIds);
+    }
+
+    public ServerResponse findChildrenIds(Set categoryIdsSet,Integer categoryId){
+        Category category = categoryMapper.selectByPrimaryKey(categoryId);
+        if(category == null){
+            return ServerResponse.createByErrorMessage("查询失败，无此品类");
+        }
+        categoryIdsSet.add(category);
+        List<Category> categoryList = categoryMapper.selectCategoryChildrenByParentId(category.getId());
+        for(Category categoryItem : categoryList){
+            findChildrenIds(categoryIdsSet,categoryItem.getId());
+        }
+        return ServerResponse.createBySuccess();
     }
 }

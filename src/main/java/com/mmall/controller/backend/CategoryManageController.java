@@ -70,4 +70,33 @@ public class CategoryManageController {
         response = iCategoryService.addCategory(parentId,categoryName);
         return response;
     }
+
+    /**
+     * 更新品类模块
+     * @param categoryId
+     * @param categoryName
+     * @param session
+     * @return
+     */
+    @RequestMapping(value="set_category_name.do",method=RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse setCategoryName(Integer categoryId,String categoryName,HttpSession session){
+        ServerResponse response = judgeUser(session);
+        if(!response.isSuccess()){
+            return response;
+        }
+        response = iCategoryService.setCategoryName(categoryId,categoryName);
+        return response;
+    }
+
+    @RequestMapping(value="get_deep_category.do",method = RequestMethod.POST)
+    @ResponseBody
+    public ServerResponse getDeepCategory(Integer categoryId,HttpSession session){
+        ServerResponse response = judgeUser(session);
+        if(!response.isSuccess()){
+            return response;
+        }
+        response = iCategoryService.getDeepCategory(categoryId);
+        return response;
+    }
 }

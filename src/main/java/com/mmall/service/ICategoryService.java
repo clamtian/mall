@@ -13,4 +13,8 @@ public interface ICategoryService {
     ServerResponse<List<Category>> getCategory(Integer categoryId);
 
     ServerResponse<String> addCategory(Integer parentId,String categoryName);
+
+    ServerResponse<String> setCategoryName(Integer categoryId,String categoryName);
+
+    ServerResponse<List<Integer>> getDeepCategory(Integer categoryId);
 }
