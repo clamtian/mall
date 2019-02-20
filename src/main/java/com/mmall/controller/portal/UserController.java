@@ -140,7 +140,7 @@ public class UserController {
     public ServerResponse<User> getInformation(HttpSession session){
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         if(currentUser == null) {
-            return ServerResponse.createByErrorMessageCode("用户未登录,强制登录status=10", ResponseCode.NEES_LOGIN.getCode());
+            return ServerResponse.createByErrorMessageCode("用户未登录,强制登录status=10", ResponseCode.NEED_LOGIN.getCode());
         }
         ServerResponse<User> response = iUserService.getInformation(currentUser.getId());
         return response;
