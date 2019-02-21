@@ -46,6 +46,20 @@ public class CategoryServiceImpl implements ICategoryService{
         return ServerResponse.createByErrorMessage("添加失败");
     }
 
+    public ServerResponse<List<Integer>> selectCategoryAndChildrenById(Integer categoryId){
+        Set<Category> categorySet = Sets.newHashSet();
+        findChildrenIds(categorySet,categoryId);
+
+
+        List<Integer> categoryIdList = Lists.newArrayList();
+        if(categoryId != null){
+            for(Category categoryItem : categorySet){
+                categoryIdList.add(categoryItem.getId());
+            }
+        }
+        return ServerResponse.createBySuccess(categoryIdList);
+    }
+
     @Override
     public ServerResponse<String> setCategoryName(Integer categoryId, String categoryName) {
         if(categoryId == null || StringUtils.isBlank(categoryName)){
