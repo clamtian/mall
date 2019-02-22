@@ -9,12 +9,17 @@ import java.io.Serializable;
 /**
  * Created by lucky on 2019/1/6.
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 //在序列化Json时，忽略值为null的属性
+@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
+
+/**
+ * 返回给前台的响应
+ */
 public class ServerResponse<T> implements Serializable {
-    private int status;
-    private String msg;
-    private T Data;
+
+    private int status;//状态
+    private String msg;//状态信息
+    private T Data;//返回数据
 
     private ServerResponse(int status) {
         this.status = status;
@@ -35,6 +40,7 @@ public class ServerResponse<T> implements Serializable {
         this.msg = msg;
         this.Data = Data;
     }
+
     @JsonIgnore
     //从Json序列化结果中将其剔除
     public boolean isSuccess() {

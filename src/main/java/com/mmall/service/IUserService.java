@@ -7,6 +7,7 @@ import com.mmall.pojo.User;
  * Created by lucky on 2019/1/6.
  */
 public interface IUserService {
+
     ServerResponse<User> login(String username, String password);
 
     ServerResponse<String> register(User user);
@@ -23,7 +24,6 @@ public interface IUserService {
 
     ServerResponse<User> updateInformation(User user);
 
-    ServerResponse<User> getInformation(Integer id);
-
     ServerResponse checkAdminRole(User user);
+
 }

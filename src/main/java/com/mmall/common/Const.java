@@ -7,7 +7,12 @@ import java.util.Set;
 /**
  * Created by lucky on 2019/1/8.
  */
+
+/**
+ * 常量类
+ */
 public class Const {
+
     public static final String CURRENT_USER = "currentUser";
 
     public static final String USERNAME = "username";
