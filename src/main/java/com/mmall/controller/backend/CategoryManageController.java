@@ -15,9 +15,14 @@ import java.util.List;
 /**
  * Created by lucky on 2019/1/15.
  */
+
+/**
+ * 商品分类管理
+ */
 @Controller
 @RequestMapping("/manage/category")
 public class CategoryManageController {
+
     @Autowired
     private ICategoryService iCategoryService;
 
@@ -72,7 +77,7 @@ public class CategoryManageController {
     }
 
     /**
-     * 更新品类模块
+     * 修改品类模块
      * @param categoryId
      * @param categoryName
      * @param session
@@ -89,6 +94,12 @@ public class CategoryManageController {
         return response;
     }
 
+    /**
+     * 获取当前分类id及递归子节点categoryId
+     * @param categoryId
+     * @param session
+     * @return
+     */
     @RequestMapping(value="get_deep_category.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse getDeepCategory(Integer categoryId,HttpSession session){

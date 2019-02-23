@@ -60,7 +60,6 @@ import java.util.Random;
 @Service("iOrderService")
 public class OrderServiceImpl implements IOrderService {
 
-
     private static  AlipayTradeService tradeService;
     static {
 

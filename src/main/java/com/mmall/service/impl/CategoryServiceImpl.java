@@ -2,7 +2,6 @@ package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.mmall.common.Const;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CategoryMapper;
 import com.mmall.pojo.Category;
@@ -17,10 +16,18 @@ import java.util.Set;
 /**
  * Created by lucky on 2019/1/15.
  */
+
 @Service("iCategoryService")
 public class CategoryServiceImpl implements ICategoryService{
+
     @Autowired
     private CategoryMapper categoryMapper;
+
+    /**
+     * 获取品类子节点
+     * @param categoryId
+     * @return
+     */
     @Override
     public ServerResponse<List<Category>> getCategory(Integer categoryId) {
         List<Category> category = categoryMapper.selectCategoryChildrenByParentId(categoryId);
@@ -30,6 +37,12 @@ public class CategoryServiceImpl implements ICategoryService{
         return ServerResponse.createBySuccess("查询成功",category);
     }
 
+    /**
+     * 增加品类
+     * @param parentId
+     * @param categoryName
+     * @return
+     */
     @Override
     public ServerResponse<String> addCategory(Integer parentId, String categoryName) {
         if(parentId == null || StringUtils.isBlank(categoryName)){
@@ -46,20 +59,12 @@ public class CategoryServiceImpl implements ICategoryService{
         return ServerResponse.createByErrorMessage("添加失败");
     }
 
-    public ServerResponse<List<Integer>> selectCategoryAndChildrenById(Integer categoryId){
-        Set<Category> categorySet = Sets.newHashSet();
-        findChildrenIds(categorySet,categoryId);
-
-
-        List<Integer> categoryIdList = Lists.newArrayList();
-        if(categoryId != null){
-            for(Category categoryItem : categorySet){
-                categoryIdList.add(categoryItem.getId());
-            }
-        }
-        return ServerResponse.createBySuccess(categoryIdList);
-    }
-
+    /**
+     * 修改品类名字
+     * @param categoryId
+     * @param categoryName
+     * @return
+     */
     @Override
     public ServerResponse<String> setCategoryName(Integer categoryId, String categoryName) {
         if(categoryId == null || StringUtils.isBlank(categoryName)){
@@ -75,6 +80,11 @@ public class CategoryServiceImpl implements ICategoryService{
         return ServerResponse.createByErrorMessage("更新失败");
     }
 
+    /**
+     * 获取当前分类id及递归子节点categoryId
+     * @param categoryId
+     * @return
+     */
     @Override
     public ServerResponse<List<Integer>> getDeepCategory(Integer categoryId) {
         if(categoryId == null){
@@ -92,6 +102,7 @@ public class CategoryServiceImpl implements ICategoryService{
         return ServerResponse.createBySuccess("查询成功",categoryIds);
     }
 
+
     public ServerResponse findChildrenIds(Set categoryIdsSet,Integer categoryId){
         Category category = categoryMapper.selectByPrimaryKey(categoryId);
         if(category == null){
@@ -103,5 +114,19 @@ public class CategoryServiceImpl implements ICategoryService{
             findChildrenIds(categoryIdsSet,categoryItem.getId());
         }
         return ServerResponse.createBySuccess();
+    }
+
+    public ServerResponse<List<Integer>> selectCategoryAndChildrenById(Integer categoryId){
+        Set<Category> categorySet = Sets.newHashSet();
+        findChildrenIds(categorySet,categoryId);
+
+
+        List<Integer> categoryIdList = Lists.newArrayList();
+        if(categoryId != null){
+            for(Category categoryItem : categorySet){
+                categoryIdList.add(categoryItem.getId());
+            }
+        }
+        return ServerResponse.createBySuccess(categoryIdList);
     }
 }

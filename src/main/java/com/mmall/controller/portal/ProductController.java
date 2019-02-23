@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
- * Created by geely
+ * Created by lucky on 2019/2/22.
  */
 
 @Controller
@@ -21,14 +21,15 @@ public class ProductController {
     @Autowired
     private IProductService iProductService;
 
-
-
-    @RequestMapping("detail.do")
-    @ResponseBody
-    public ServerResponse<ProductDetailVo> detail(Integer productId){
-        return iProductService.getProductDetail(productId);
-    }
-
+    /**
+     * 产品搜索及动态排序List
+     * @param keyword //关键字
+     * @param categoryId
+     * @param pageNum
+     * @param pageSize
+     * @param orderBy
+     * @return
+     */
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse<PageInfo> list(@RequestParam(value = "keyword",required = false)String keyword,
@@ -39,8 +40,9 @@ public class ProductController {
         return iProductService.getProductByKeywordCategory(keyword,categoryId,pageNum,pageSize,orderBy);
     }
 
-
-
-
-
+    @RequestMapping("detail.do")
+    @ResponseBody
+    public ServerResponse<ProductDetailVo> detail(Integer productId){
+        return iProductService.getProductDetail(productId);
+    }
 }
