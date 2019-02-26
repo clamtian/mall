@@ -6,21 +6,23 @@ import java.math.BigDecimal;
  * Created by lucky on 2019/2/21.
  */
 public class ProductDetailVo {
+
     private Integer  id;
     private Integer categoryId;
     private String name;
     private String subtitle;
+
     private String mainImage;
     private String subImages;
     private String detail;
     private BigDecimal price;
+
     private Integer stock;
     private Integer status;
     private String createTime;
     private String updateTime;
 
-
-    private String imageHost;
+    private String imageHost;//图片服务器url前缀
     private Integer parentCategoryId;
 
     public Integer getId() {

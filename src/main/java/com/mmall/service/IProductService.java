@@ -14,8 +14,6 @@ public interface IProductService {
 
     ServerResponse setSaleStatus(Integer productId, Integer status);
 
-    ServerResponse detail(Integer productId);
-
     ServerResponse getProductList(int pageNum, int pageSize);
 
     ServerResponse searchProduct(String productName, Integer productId, int pageNum, int pageSize);
