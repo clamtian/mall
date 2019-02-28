@@ -35,6 +35,12 @@ public class OrderController {
     @Autowired
     private IOrderService iOrderService;
 
+    /**
+     * 生成订单
+     * @param session
+     * @param shippingId
+     * @return
+     */
     @RequestMapping("create.do")
     @ResponseBody
     public ServerResponse create(HttpSession session, Integer shippingId){
@@ -45,18 +51,11 @@ public class OrderController {
         return iOrderService.createOrder(user.getId(),shippingId);
     }
 
-
-    @RequestMapping("cancel.do")
-    @ResponseBody
-    public ServerResponse cancel(HttpSession session, Long orderNo){
-        User user = (User)session.getAttribute(Const.CURRENT_USER);
-        if(user ==null){
-            return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
-        }
-        return iOrderService.cancel(user.getId(),orderNo);
-    }
-
-
+    /**
+     * 查看订单的商品信息
+     * @param session
+     * @return
+     */
     @RequestMapping("get_order_cart_product.do")
     @ResponseBody
     public ServerResponse getOrderCartProduct(HttpSession session){
@@ -67,18 +66,13 @@ public class OrderController {
         return iOrderService.getOrderCartProduct(user.getId());
     }
 
-
-
-    @RequestMapping("detail.do")
-    @ResponseBody
-    public ServerResponse detail(HttpSession session,Long orderNo){
-        User user = (User)session.getAttribute(Const.CURRENT_USER);
-        if(user ==null){
-            return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
-        }
-        return iOrderService.getOrderDetail(user.getId(),orderNo);
-    }
-
+    /**
+     * 查看所有订单list
+     * @param session
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse list(HttpSession session, @RequestParam(value = "pageNum",defaultValue = "1") int pageNum, @RequestParam(value = "pageSize",defaultValue = "10") int pageSize){
@@ -89,39 +83,89 @@ public class OrderController {
         return iOrderService.getOrderList(user.getId(),pageNum,pageSize);
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @RequestMapping("pay.do")
+    /**
+     * 查看订单详情
+     * @param session
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("detail.do")
     @ResponseBody
-    public ServerResponse pay(HttpSession session, Long orderNo, HttpServletRequest request){
+    public ServerResponse detail(HttpSession session, Long orderNo){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
         }
-        String path = request.getSession().getServletContext().getRealPath("upload");
-        return iOrderService.pay(orderNo,user.getId(),path);
+        return iOrderService.getOrderDetail(user.getId(),orderNo);
     }
+
+    /**
+     * 取消订单
+     * @param session
+     * @param orderNo
+     * @return
+     */
+    @RequestMapping("cancel.do")
+    @ResponseBody
+    public ServerResponse cancel(HttpSession session, Long orderNo){
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if(user ==null){
+            return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
+        }
+        return iOrderService.cancel(user.getId(), orderNo);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * 支付
+     * @param session
+     * @param orderNo
+     * @param request
+     * @return
+     */
+    @RequestMapping("pay.do")
+    @ResponseBody
+    public ServerResponse pay(HttpSession session, Long orderNo, HttpServletRequest request){
+        User user = (User)session.getAttribute(Const.CURRENT_USER);
+        if(user == null){
+            return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
+        }
+        String path = request.getSession().getServletContext().getRealPath("upload");
+        return iOrderService.pay(orderNo, user.getId(), path);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @RequestMapping("alipay_callback.do")
     @ResponseBody
