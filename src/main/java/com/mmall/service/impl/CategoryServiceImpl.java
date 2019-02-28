@@ -120,7 +120,6 @@ public class CategoryServiceImpl implements ICategoryService{
         Set<Category> categorySet = Sets.newHashSet();
         findChildrenIds(categorySet,categoryId);
 
-
         List<Integer> categoryIdList = Lists.newArrayList();
         if(categoryId != null){
             for(Category categoryItem : categorySet){

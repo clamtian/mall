@@ -27,7 +27,8 @@ public class FileServiceImpl implements IFileService {
         //可能是abc.abc.jpg,所以从最后一个“.”开始获取拓展名
         String fileExtensionName = fileName.substring(fileName.lastIndexOf(".") + 1);
         String uploadFileName = UUID.randomUUID().toString() + "." + fileExtensionName;
-        logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}", fileName, path, uploadFileName);
+        logger.info("开始上传文件,上传文件的文件名:{},上传的路径:{},新文件名:{}",
+                fileName, path, uploadFileName);
 
         File fileDir = new File(path);
         if(!fileDir.exists()){
@@ -37,7 +38,7 @@ public class FileServiceImpl implements IFileService {
         File targetFile = new File(path, uploadFileName);
 
         try {
-            //文件上传成功
+            //将file保存到targetFile中
             file.transferTo(targetFile);
             FTPUtil.uploadFile(Lists.newArrayList(targetFile));
             //删除文件，防止累积过多

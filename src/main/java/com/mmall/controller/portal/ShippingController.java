@@ -16,18 +16,22 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpSession;
 
 /**
- * Created by lucky on 2019/2/22.
+ * Created by lucky on 2019/2/24.
  */
 
 @Controller
 @RequestMapping("/shipping/")
 public class ShippingController {
 
-
     @Autowired
     private IShippingService iShippingService;
 
-
+    /**
+     * 添加地址
+     * @param session
+     * @param shipping
+     * @return
+     */
     @RequestMapping("add.do")
     @ResponseBody
     public ServerResponse add(HttpSession session,Shipping shipping){
@@ -38,28 +42,44 @@ public class ShippingController {
         return iShippingService.add(user.getId(),shipping);
     }
 
-
-    @RequestMapping("del.do")
+    /**
+     * 删除地址
+     * @param session
+     * @param shippingId
+     * @return
+     */
+    @RequestMapping("delete.do")
     @ResponseBody
-    public ServerResponse del(HttpSession session,Integer shippingId){
+    public ServerResponse delete(HttpSession session,Integer shippingId){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(), ResponseCode.NEED_LOGIN.getCode());
         }
-        return iShippingService.del(user.getId(),shippingId);
+        return iShippingService.delete(user.getId(),shippingId);
     }
 
+    /**
+     *更新地址
+     * @param session
+     * @param shipping
+     * @return
+     */
     @RequestMapping("update.do")
     @ResponseBody
-    public ServerResponse update(HttpSession session,Shipping shipping){
+    public ServerResponse update(HttpSession session, Shipping shipping){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user ==null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(), ResponseCode.NEED_LOGIN.getCode());
         }
-        return iShippingService.update(user.getId(),shipping);
+        return iShippingService.update(user.getId(), shipping);
     }
 
-
+    /**
+     * 查看地址
+     * @param session
+     * @param shippingId
+     * @return
+     */
     @RequestMapping("select.do")
     @ResponseBody
     public ServerResponse<Shipping> select(HttpSession session,Integer shippingId){
@@ -70,7 +90,13 @@ public class ShippingController {
         return iShippingService.select(user.getId(),shippingId);
     }
 
-
+    /**
+     * 查看地址list
+     * @param pageNum
+     * @param pageSize
+     * @param session
+     * @return
+     */
     @RequestMapping("list.do")
     @ResponseBody
     public ServerResponse<PageInfo> list(@RequestParam(value = "pageNum",defaultValue = "1") int pageNum,

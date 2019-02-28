@@ -152,7 +152,7 @@ public class ProductManageController {
     }
 
     /**
-     * 图片上传
+     * SpringMVC文件上传
      * @param session
      * @param file
      * @param request
@@ -166,6 +166,12 @@ public class ProductManageController {
             return ServerResponse.createByErrorMessageCode("用户未登录,请登录管理员", ResponseCode.NEED_LOGIN.getCode());
         }
         if(iUserService.checkAdminRole(user).isSuccess()){
+            /**
+             * 查找upload的绝对路径
+             * 在Tomcat的webapps下，有则加载，无则创建
+             * upload用于暂时存储上传的文件
+             * 上传完成后会删除
+             */
             String path = request.getSession().getServletContext().getRealPath("upload");
             String targetFileName = iFileService.upload(file, path);
             String url = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFileName;
@@ -198,7 +204,7 @@ public class ProductManageController {
             return resultMap;
         }
         /*
-         富文本中对于返回值有自己的要求,我们使用是simditor所以按照simditor的要求进行返回
+         富文本中对于返回值有自己的要求,使用Simditor
         {
             "success": true/false,
             "msg": "error message", # optional
