@@ -11,14 +11,9 @@ import java.util.Date;
  * Created by lucky on 2019/2/21.
  */
 public class DateTimeUtil {
-
-    //joda-time
-
     //str->Date
     //Date->str
     public static final String STANDARD_FORMAT = "yyyy-MM-dd HH:mm:ss";
-
-
 
     public static Date strToDate(String dateTimeStr, String formatStr){
         DateTimeFormatter dateTimeFormatter = DateTimeFormat.forPattern(formatStr);
@@ -26,7 +21,7 @@ public class DateTimeUtil {
         return dateTime.toDate();
     }
 
-    public static String dateToStr(Date date,String formatStr){
+    public static String dateToStr(Date date, String formatStr){
         if(date == null){
             return StringUtils.EMPTY;
         }

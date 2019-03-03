@@ -12,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
 /**
@@ -185,15 +186,17 @@ public class UserServiceImpl implements IUserService{
     }
 
     /**
-     * 校验是否是管理员
+     * 判断当前登录用户是否是管理员
      * @param user
      * @return
      */
     public ServerResponse checkAdminRole(User user){
-        if(user != null && user.getRole().intValue() == Const.Role.ROLE_ADMIN){
-            return ServerResponse.createBySuccess();
+        if(user == null){
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getDesc());
+        }else if(!user.getRole().equals(Const.Role.ROLE_ADMIN)){
+            return ServerResponse.createByErrorMessage(ResponseCode.NO_RIGHT.getDesc());
         }
-        return ServerResponse.createByError();
+        return ServerResponse.createBySuccess();
     }
 
     /**

@@ -1,6 +1,7 @@
 package com.mmall.service.impl;
 
 import com.google.common.collect.Lists;
+import com.mmall.common.ResponseCode;
 import com.mmall.service.IFileService;
 import com.mmall.util.FTPUtil;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class FileServiceImpl implements IFileService {
             //删除文件，防止累积过多
             targetFile.delete();
         } catch (IOException e) {
-            logger.error("上传文件异常",e);
+            logger.error(ResponseCode.ERROR.getDesc(),e);
             return null;
         }
         return targetFile.getName();

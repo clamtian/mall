@@ -18,7 +18,7 @@ public class PropertiesUtil {
 
     private static Properties props;
 
-    static {
+    static{
         String fileName = "mmall.properties";
         props = new Properties();
         try {
@@ -43,7 +43,4 @@ public class PropertiesUtil {
         }
         return value.trim();
     }
-
-
-
 }
