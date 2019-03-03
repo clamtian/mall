@@ -33,9 +33,9 @@ public class UserController {
     @RequestMapping(value = "login.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> login(String username, String password, HttpSession session){
-        ServerResponse<User> response = iUserService.login(username,password);
+        ServerResponse<User> response = iUserService.login(username, password);
         if(response.isSuccess()){
-            session.setAttribute(Const.CURRENT_USER,response.getData());
+            session.setAttribute(Const.CURRENT_USER, response.getData());
         }
         return response;
     }
@@ -49,7 +49,7 @@ public class UserController {
     @ResponseBody
     public ServerResponse<String> logout(HttpSession session){
         session.removeAttribute(Const.CURRENT_USER);
-        return ServerResponse.createBySuccessMessage("退出成功!");
+        return ServerResponse.createBySuccessMessage(ResponseCode.SUCCESS.getDesc());
     }
 
     /**
@@ -65,19 +65,6 @@ public class UserController {
     }
 
     /**
-     * 校验模块
-     * @param str
-     * @param type
-     * @return
-     */
-    @RequestMapping(value = "check_valid.do",method = RequestMethod.POST)
-    @ResponseBody
-    public ServerResponse<String> checkValid(String str,String type){
-        ServerResponse response = iUserService.checkValid(str,type);
-        return response;
-    }
-
-    /**
      * 获取用户信息模块
      * @param session
      * @return
@@ -85,12 +72,11 @@ public class UserController {
     @RequestMapping(value = "get_user_info.do",method = RequestMethod.POST)
     @ResponseBody
     public ServerResponse<User> getUserInfo(HttpSession session){
-
         User user = (User) session.getAttribute(Const.CURRENT_USER);//获得当前登录用户
         if(user != null){//将User作为Data传回前台
             return ServerResponse.createBySuccess(user);
         }
-        return ServerResponse.createByErrorMessage("用户未登录");
+        return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getDesc());
     }
 
     /**
@@ -115,8 +101,8 @@ public class UserController {
      */
     @RequestMapping(value = "forget_check_answer.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> forgetCheckAnswer(String username,String question,String answer){
-        ServerResponse<String> response = iUserService.checkAnswer(username,question,answer);
+    public ServerResponse<String> forgetCheckAnswer(String username, String question, String answer){
+        ServerResponse<String> response = iUserService.checkAnswer(username, question, answer);
         return response;
     }
 
@@ -129,8 +115,8 @@ public class UserController {
      */
     @RequestMapping(value = "forget_reset_password.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> forgetResetPassword(String username,String passwordNew,String forgetToken){
-        ServerResponse<String> response = iUserService.forgetResetPassword(username,passwordNew,forgetToken);
+    public ServerResponse<String> forgetResetPassword(String username ,String passwordNew, String forgetToken){
+        ServerResponse<String> response = iUserService.forgetResetPassword(username, passwordNew, forgetToken);
         return response;
     }
 
@@ -146,9 +132,9 @@ public class UserController {
     public ServerResponse<String> resetPassword(HttpSession session,String passwordNew,String passwordOld){
         User user = (User) session.getAttribute(Const.CURRENT_USER);
         if(user == null){//判断用户是否登录
-            return ServerResponse.createByErrorMessage("用户未登录");
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getDesc());
         }
-        ServerResponse<String> response = iUserService.resetPassword(user,passwordNew,passwordOld);
+        ServerResponse<String> response = iUserService.resetPassword(user, passwordNew, passwordOld);
         return response;
     }
 
@@ -163,9 +149,8 @@ public class UserController {
     public ServerResponse<User> updateInformation(HttpSession session,User user){
         User currentUser = (User) session.getAttribute(Const.CURRENT_USER);
         if(currentUser == null){
-            return ServerResponse.createByErrorMessage("用户未登录");
+            return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getDesc());
         }
-
         user.setId(currentUser.getId());
         user.setUsername(currentUser.getUsername());
         ServerResponse<User> response = iUserService.updateInformation(user);

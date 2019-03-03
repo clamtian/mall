@@ -3,9 +3,6 @@ package com.mmall.util;
 
 import java.security.MessageDigest;
 
-/**
- * Created by lucky on 2019/1/6.
- */
 public class MD5Util {
 
     private static String byteArrayToHexString(byte b[]) {

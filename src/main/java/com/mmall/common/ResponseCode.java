@@ -11,10 +11,14 @@ public  enum ResponseCode {
 
     SUCCESS(0, "SUCCESS"),
     ERROR(1, "ERROR"),
-    NO_USER(10, "用户名不存在"),
-    NEED_LOGIN(11, "用户未登录"),
-    PASSWORD_ERROR(12, "密码错误"),
-    ILLEGAL_ARGUMENT(2, "非法参数");
+    ILLEGAL_ARGUMENT(10, "非法参数"),
+    NO_USER(11, "用户不存在"),
+    NEED_LOGIN(12, "用户未登录"),
+    PASSWORD_ERROR(13, "密码错误"),
+    ANSWER_ERROR(14,"答案错误"),
+    OVERTIME(15,"超时，请重试"),
+    EMILE_EXIST(16,"邮箱已存在"),
+    USER_EXIST(17,"用户已存在");
 
     private final int code;
     private final String desc;

@@ -21,8 +21,8 @@ public class Const {
 
 
     public interface Role{
-        public Integer ROLE_CUSTOMER = 0;
-        public Integer ROLE_ADMIN = 1;
+        Integer ROLE_CUSTOMER = 0;
+        Integer ROLE_ADMIN = 1;
     }
 
     public interface Cart{

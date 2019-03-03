@@ -132,11 +132,8 @@
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null" >
-        update_time = #{updateTime,jdbcType=TIMESTAMP},
-      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    , update_time = now() where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.pojo.User" >
     update mmall_user
@@ -148,7 +145,7 @@
       answer = #{answer,jdbcType=VARCHAR},
       role = #{role,jdbcType=INTEGER},
       create_time = #{createTime,jdbcType=TIMESTAMP},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = now()
     where id = #{id,jdbcType=INTEGER}
   </update>
   
@@ -160,13 +157,16 @@
   SELECT <include refid="Base_Column_List" /> from mmall_user
     WHERE username = #{username} and password = #{password}
   </select>
+
   <select id="checkEmail" resultType="int" parameterType="string">
     SELECT count(1) from mmall_user
     WHERE email = #{email}
   </select>
+
   <select id="selectQuestionByUsername" resultType="string" parameterType="string">
   SELECT question FROM mmall_user WHERE username = #{username}
   </select>
+
   <select id="checkAnswer" resultType="int" parameterType="string">
     SELECT
     count(1)
@@ -181,8 +181,5 @@
   </update>
   <select id="checkPassword" resultType="int" parameterType="map">
   SELECT count(1) FROM mmall_user WHERE id = #{id} and password = #{password}
-  </select>
-  <select id="checkEmailByUserId" resultType="int" parameterType="map">
-  SELECT count(1) FROM mmall_user WHERE id = #{id} and email = #{email}
   </select>
 </mapper>
