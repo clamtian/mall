@@ -126,4 +126,5 @@ public class CartProductVo {
     public void setLimitQuantity(String limitQuantity) {
         this.limitQuantity = limitQuantity;
     }
+
 }

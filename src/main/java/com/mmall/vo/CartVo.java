@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 /**
- * Created by lucky on 2019/2/22.
+ * Created by lucky on 2019/2/24.
  */
 public class CartVo {
 
@@ -44,4 +44,5 @@ public class CartVo {
     public void setImageHost(String imageHost) {
         this.imageHost = imageHost;
     }
+
 }

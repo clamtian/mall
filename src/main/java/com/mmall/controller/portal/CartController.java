@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpSession;
 
 /**
- * Created by lucky on 2019/2/23.
+ * Created by lucky on 2019/2/24.
  */
 @Controller
 @RequestMapping("/cart/")
@@ -68,7 +68,7 @@ public class CartController {
         if(user ==null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
         }
-        return iCartService.update(user.getId(),productId,count);
+        return iCartService.update(user.getId(), productId, count);
     }
 
     /**
@@ -84,7 +84,7 @@ public class CartController {
         if(user ==null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
         }
-        return iCartService.deleteProduct(user.getId(),productIds);
+        return iCartService.deleteProduct(user.getId(), productIds);
     }
 
     /**

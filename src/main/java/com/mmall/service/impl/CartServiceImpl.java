@@ -39,12 +39,11 @@ public class CartServiceImpl implements ICartService {
      * @param count
      * @return
      */
-    public ServerResponse<CartVo> add(Integer userId,Integer productId,Integer count){
+    public ServerResponse<CartVo> add(Integer userId, Integer productId, Integer count){
         if(productId == null || count == null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.ILLEGAL_ARGUMENT.getDesc(),ResponseCode.ILLEGAL_ARGUMENT.getCode());
         }
-
-        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        Cart cart = cartMapper.selectCartByUserIdProductId(userId, productId);
         if(cart == null){
             //这个产品不在这个购物车里,需要新增一个这个产品的记录
             Cart cartItem = new Cart();
@@ -78,11 +77,11 @@ public class CartServiceImpl implements ICartService {
      * @param count
      * @return
      */
-    public ServerResponse<CartVo> update(Integer userId,Integer productId,Integer count){
+    public ServerResponse<CartVo> update(Integer userId, Integer productId, Integer count){
         if(productId == null || count == null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.ILLEGAL_ARGUMENT.getDesc(), ResponseCode.ILLEGAL_ARGUMENT.getCode());
         }
-        Cart cart = cartMapper.selectCartByUserIdProductId(userId,productId);
+        Cart cart = cartMapper.selectCartByUserIdProductId(userId, productId);
         if(cart != null){
             cart.setQuantity(count);
         }
@@ -97,6 +96,11 @@ public class CartServiceImpl implements ICartService {
      * @return
      */
     public ServerResponse<CartVo> deleteProduct(Integer userId, String productIds){
+        /**
+         * 支持同时删除多个商品
+         * 使用“，”来分割要删除的商品ID
+         */
+
         List<String> productList = Splitter.on(",").splitToList(productIds);
         if(CollectionUtils.isEmpty(productList)){
             return ServerResponse.createByErrorMessageCode(ResponseCode.ILLEGAL_ARGUMENT.getDesc(),ResponseCode.ILLEGAL_ARGUMENT.getCode());
@@ -129,11 +133,16 @@ public class CartServiceImpl implements ICartService {
         return ServerResponse.createBySuccess(cartMapper.selectCartProductCount(userId));
     }
 
+    /**
+     * 生成CartVO
+     * @param userId
+     * @return
+     */
     private CartVo getCartVoLimit(Integer userId){
         CartVo cartVo = new CartVo();
         List<Cart> cartList = cartMapper.selectCartByUserId(userId);
-        List<CartProductVo> cartProductVoList = Lists.newArrayList();
 
+        List<CartProductVo> cartProductVoList = Lists.newArrayList();
         BigDecimal cartTotalPrice = new BigDecimal("0");
 
         if(CollectionUtils.isNotEmpty(cartList)){
@@ -168,10 +177,10 @@ public class CartServiceImpl implements ICartService {
                     }
                     cartProductVo.setQuantity(buyLimitCount);
                     //计算总价
-                    cartProductVo.setProductTotalPrice(BigDecimalUtil.mul(product.getPrice().doubleValue(),cartProductVo.getQuantity()));
+                    cartProductVo.setProductTotalPrice(BigDecimalUtil.mul(product.getPrice().doubleValue(),
+                            cartProductVo.getQuantity()));
                     cartProductVo.setProductChecked(cartItem.getChecked());
                 }
-
                 if(cartItem.getChecked() == Const.Cart.CHECKED){
                     //如果已经勾选,增加到整个的购物车总价中
                     cartTotalPrice = BigDecimalUtil.add(cartTotalPrice.doubleValue(), cartProductVo.getProductTotalPrice().doubleValue());
@@ -183,7 +192,6 @@ public class CartServiceImpl implements ICartService {
         cartVo.setCartProductVoList(cartProductVoList);
         cartVo.setAllChecked(this.getAllCheckedStatus(userId));
         cartVo.setImageHost(PropertiesUtil.getProperty("ftp.server.http.prefix"));
-
         return cartVo;
     }
 
