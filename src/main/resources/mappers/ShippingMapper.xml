@@ -155,11 +155,8 @@
       <if test="createTime != null" >
         create_time = #{createTime,jdbcType=TIMESTAMP},
       </if>
-      <if test="updateTime != null" >
-        update_time = now(),
-      </if>
     </set>
-    where id = #{id,jdbcType=INTEGER}
+    , update_time = now() where id = #{id,jdbcType=INTEGER}
   </update>
   <update id="updateByPrimaryKey" parameterType="com.mmall.pojo.Shipping" >
     update mmall_shipping

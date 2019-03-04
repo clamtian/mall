@@ -13,6 +13,7 @@ import com.alipay.demo.trade.utils.ZxingUtils;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mmall.common.Const;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.OrderItemMapper;
 import com.mmall.dao.OrderMapper;
@@ -72,7 +73,7 @@ public class PayServiceImpl implements IPayService{
         Map<String ,String> resultMap = Maps.newHashMap();
         Order order = orderMapper.selectByUserIdAndOrderNo(userId, orderNo);
         if(order == null){
-            return ServerResponse.createByErrorMessage("用户没有该订单");
+            return ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
         }
         resultMap.put("orderNo", String.valueOf(order.getOrderNo()));
 
@@ -218,7 +219,7 @@ public class PayServiceImpl implements IPayService{
         String tradeStatus = params.get("trade_status");
         Order order = orderMapper.selectByOrderNo(orderNo);
         if(order == null){
-            return ServerResponse.createByErrorMessage("非快乐慕商城的订单,回调忽略");
+            return ServerResponse.createByErrorMessage("非mall商城的订单,回调忽略");
         }
         if(order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()){
             return ServerResponse.createBySuccess("支付宝重复调用");

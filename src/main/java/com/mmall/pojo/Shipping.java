@@ -3,6 +3,7 @@ package com.mmall.pojo;
 import java.util.Date;
 
 public class Shipping {
+
     private Integer id;
 
     private Integer userId;
@@ -141,4 +142,5 @@ public class Shipping {
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
     }
+
 }
