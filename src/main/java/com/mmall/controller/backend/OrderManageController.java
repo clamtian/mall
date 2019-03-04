@@ -39,13 +39,13 @@ public class OrderManageController {
 
         User user = (User)session.getAttribute(Const.CURRENT_USER);
         if(user == null){
-            return ServerResponse.createByErrorMessageCode("用户未登录,请登录管理员",ResponseCode.NEED_LOGIN.getCode());
+            return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
 
         }
         if(iUserService.checkAdminRole(user).isSuccess()){
             return iOrderService.manageList(pageNum, pageSize);
         }else{
-            return ServerResponse.createByErrorMessage("无权限操作");
+            return ServerResponse.createByErrorMessage(ResponseCode.NO_RIGHT.getDesc());
         }
     }
 

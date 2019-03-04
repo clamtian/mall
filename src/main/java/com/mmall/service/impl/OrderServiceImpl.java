@@ -1,20 +1,10 @@
 package com.mmall.service.impl;
 
-import com.alipay.api.AlipayResponse;
-import com.alipay.api.response.AlipayTradePrecreateResponse;
-import com.alipay.demo.trade.config.Configs;
-import com.alipay.demo.trade.model.ExtendParams;
-import com.alipay.demo.trade.model.GoodsDetail;
-import com.alipay.demo.trade.model.builder.AlipayTradePrecreateRequestBuilder;
-import com.alipay.demo.trade.model.result.AlipayF2FPrecreateResult;
-import com.alipay.demo.trade.service.AlipayTradeService;
-import com.alipay.demo.trade.service.impl.AlipayTradeServiceImpl;
-import com.alipay.demo.trade.utils.ZxingUtils;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.mmall.common.Const;
+import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.dao.CartMapper;
 import com.mmall.dao.OrderItemMapper;
@@ -25,32 +15,22 @@ import com.mmall.dao.ShippingMapper;
 import com.mmall.pojo.Cart;
 import com.mmall.pojo.Order;
 import com.mmall.pojo.OrderItem;
-import com.mmall.pojo.PayInfo;
 import com.mmall.pojo.Product;
 import com.mmall.pojo.Shipping;
 import com.mmall.service.IOrderService;
 import com.mmall.util.BigDecimalUtil;
 import com.mmall.util.DateTimeUtil;
-import com.mmall.util.FTPUtil;
 import com.mmall.util.PropertiesUtil;
 import com.mmall.vo.OrderItemVo;
-import com.mmall.vo.OrderProductVo;
 import com.mmall.vo.OrderVo;
 import com.mmall.vo.ShippingVo;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 /**
@@ -78,7 +58,7 @@ public class OrderServiceImpl implements IOrderService {
      * @param shippingId
      * @return
      */
-    public  ServerResponse createOrder(Integer userId, Integer shippingId){
+    public ServerResponse createOrder(Integer userId, Integer shippingId){
 
         //从购物车中获取数据
         List<Cart> cartList = cartMapper.selectCheckedCartByUserId(userId);
@@ -109,7 +89,6 @@ public class OrderServiceImpl implements IOrderService {
         this.reduceProductStock(orderItemList);
         //清空购物车
         this.cleanCart(cartList);
-
         OrderVo orderVo = assembleOrderVo(order, orderItemList);
         return ServerResponse.createBySuccess(orderVo);
     }
@@ -122,7 +101,7 @@ public class OrderServiceImpl implements IOrderService {
      * @return
      */
     public ServerResponse<PageInfo> getOrderList(Integer userId,int pageNum,int pageSize){
-        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum, pageSize);
         List<Order> orderList = orderMapper.selectByUserId(userId);
         List<OrderVo> orderVoList = this.assembleOrderVoList(orderList, userId);
         PageInfo pageResult = new PageInfo(orderList);
@@ -138,13 +117,13 @@ public class OrderServiceImpl implements IOrderService {
      */
     public ServerResponse<OrderVo> getOrderDetail(Integer userId, Long orderNo){
 
-        Order order = orderMapper.selectByUserIdAndOrderNo(userId,orderNo);
+        Order order = orderMapper.selectByUserIdAndOrderNo(userId, orderNo);
         if(order != null){
-            List<OrderItem> orderItemList = orderItemMapper.getByOrderNoUserId(orderNo,userId);
+            List<OrderItem> orderItemList = orderItemMapper.getByOrderNoUserId(orderNo, userId);
             OrderVo orderVo = this.assembleOrderVo(order, orderItemList);
             return ServerResponse.createBySuccess(orderVo);
         }
-        return  ServerResponse.createByErrorMessage("没有找到该订单");
+        return  ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
     }
 
     /**
@@ -168,7 +147,7 @@ public class OrderServiceImpl implements IOrderService {
 
         int row = orderMapper.updateByPrimaryKeySelective(updateOrder);
         if(row > 0){
-            return ServerResponse.createBySuccess("取消订单成功");
+            return ServerResponse.createBySuccess(ResponseCode.SUCCESS.getDesc());
         }
         return ServerResponse.createByError();
     }
@@ -248,15 +227,11 @@ public class OrderServiceImpl implements IOrderService {
     }
 
 
-
-
-
     private ServerResponse getCartOrderItem(Integer userId, List<Cart> cartList){
         List<OrderItem> orderItemList = Lists.newArrayList();
         if(CollectionUtils.isEmpty(cartList)){
             return ServerResponse.createByErrorMessage("购物车为空");
         }
-
         //校验购物车的数据,包括产品的状态和数量
         for(Cart cartItem : cartList){
             OrderItem orderItem = new OrderItem();
@@ -283,7 +258,7 @@ public class OrderServiceImpl implements IOrderService {
     private BigDecimal getOrderTotalPrice(List<OrderItem> orderItemList){
         BigDecimal payment = new BigDecimal("0");
         for(OrderItem orderItem : orderItemList){
-            payment = BigDecimalUtil.add(payment.doubleValue(),orderItem.getTotalPrice().doubleValue());
+            payment = BigDecimalUtil.add(payment.doubleValue(), orderItem.getTotalPrice().doubleValue());
         }
         return payment;
     }
@@ -396,5 +371,4 @@ public class OrderServiceImpl implements IOrderService {
         }
         return orderVoList;
     }
-
 }

@@ -97,7 +97,8 @@ public class PayServiceImpl implements IPayService{
         String sellerId = "";
 
         // 订单描述，可以对交易或商品进行一个详细地描述，比如填写"购买商品3件共20.00元"
-        String body = new StringBuilder().append("订单：").append(outTradeNo).append("共").append(totalAmount).append("元").toString();
+        String body = new StringBuilder().append("订单：").append(outTradeNo).append("共").append(totalAmount).
+                append("元").toString();
 
         // 商户操作员编号，添加此参数可以为商户操作员做销售统计
         String operatorId = "test_operator_id";
@@ -111,15 +112,16 @@ public class PayServiceImpl implements IPayService{
         extendParams.setSysServiceProviderId(providerId);
 
         // 支付超时，线下扫码交易定义为5分钟
-        String timeoutExpress = "5m";
+        String timeoutExpress = "120m";
 
         // 商品明细列表，需填写购买商品详细信息，
         List<GoodsDetail> goodsDetailList = new ArrayList<GoodsDetail>();
 
+        // 创建一个商品信息，参数含义分别为商品id（使用国标）、名称、单价（单位为分）、数量，如果需要添加商品类别，详见GoodsDetail
         List<OrderItem> orderItemList = orderItemMapper.getByOrderNoUserId(orderNo, userId);
         for(OrderItem orderItem : orderItemList){
             GoodsDetail goods = GoodsDetail.newInstance(orderItem.getProductId().toString(), orderItem.getProductName(),
-                    BigDecimalUtil.mul(orderItem.getCurrentUnitPrice().doubleValue(), new Double(100).doubleValue()).longValue(),
+                    BigDecimalUtil.mul(orderItem.getCurrentUnitPrice().doubleValue(), new Double(100)).longValue(),
                     orderItem.getQuantity());
             goodsDetailList.add(goods);
         }
@@ -138,7 +140,6 @@ public class PayServiceImpl implements IPayService{
         switch (result.getTradeStatus()) {
             case SUCCESS:
                 logger.info("支付宝下单成功: )");
-
                 AlipayTradePrecreateResponse response = result.getResponse();
                 dumpResponse(response);
 
@@ -147,11 +148,11 @@ public class PayServiceImpl implements IPayService{
                     folder.setWritable(true);
                     folder.mkdirs();
                 }
-
-                //要修改为运行机器上的路径
-                //细节，path后要加“/”
+                /**要修改为运行机器上的路径
+                 * 细节，path后要加“/”
+                 */
                 String qrPath = String.format(path + "/qr-%s.png", response.getOutTradeNo());
-                String qrFileName = String.format("qr-%s.png", 256, qrPath);
+                String qrFileName = String.format("qr-%s.png", response.getOutTradeNo());
                 ZxingUtils.getQRCodeImge(response.getQrCode(), 256, qrPath);
 
                 File targetFile = new File(path, qrFileName);
@@ -160,26 +161,26 @@ public class PayServiceImpl implements IPayService{
                 }catch (IOException e){
                     logger.error("上传二维码异常", e);
                 }
-
                 logger.info("qrPath:" + qrPath);
                 String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
-
             case FAILED:
                 logger.error("支付宝下单失败!!!");
-                return ServerResponse.createByErrorMessage("下单失败!!");
-
+                return ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
             case UNKNOWN:
                 logger.error("系统异常，订单状态未知!!!");
-                return ServerResponse.createByErrorMessage("系统异常，下单状态未知");
-
+                return ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
             default:
                 logger.error("不支持的交易状态，交易返回异常!!!");
-                return  ServerResponse.createByErrorMessage("不支持的交易");
+                return  ServerResponse.createByErrorMessage(ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
     }
-    // 简单打印应答
+
+    /**
+     * 简单打印应答
+     * @param response
+     */
     private void dumpResponse(AlipayResponse response) {
         if (response != null) {
             logger.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
@@ -198,14 +199,14 @@ public class PayServiceImpl implements IPayService{
      * @return
      */
     public ServerResponse queryOrderPayStatus(Integer userId,Long orderNo){
-        Order order = orderMapper.selectByUserIdAndOrderNo(userId,orderNo);
+        Order order = orderMapper.selectByUserIdAndOrderNo(userId, orderNo);
         if(order == null){
             return ServerResponse.createByErrorMessage("用户没有该订单");
         }
         if(order.getStatus() >= Const.OrderStatusEnum.PAID.getCode()){
-            return ServerResponse.createBySuccess();
+            return ServerResponse.createBySuccess(ResponseCode.SUCCESS.getDesc());
         }
-        return ServerResponse.createByError();
+        return ServerResponse.createByErrorMessage(ResponseCode.ERROR.toString());
     }
 
     /**
