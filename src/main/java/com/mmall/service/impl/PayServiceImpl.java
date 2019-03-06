@@ -26,6 +26,7 @@ import com.mmall.util.BigDecimalUtil;
 import com.mmall.util.DateTimeUtil;
 import com.mmall.util.FTPUtil;
 import com.mmall.util.PropertiesUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +44,7 @@ import java.util.Map;
  */
 
 @Service("iPayService")
+@Slf4j
 public class PayServiceImpl implements IPayService{
 
     @Autowired
@@ -53,7 +55,7 @@ public class PayServiceImpl implements IPayService{
     private OrderItemMapper orderItemMapper;
 
     private static AlipayTradeService service;
-    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
+//    private static final Logger logger = LoggerFactory.getLogger(OrderServiceImpl.class);
 
     static {
 
@@ -139,7 +141,7 @@ public class PayServiceImpl implements IPayService{
         AlipayF2FPrecreateResult result = service.tradePrecreate(builder);
         switch (result.getTradeStatus()) {
             case SUCCESS:
-                logger.info("支付宝下单成功: )");
+                log.info("支付宝下单成功: )");
                 AlipayTradePrecreateResponse response = result.getResponse();
                 dumpResponse(response);
 
@@ -159,20 +161,20 @@ public class PayServiceImpl implements IPayService{
                 try{
                     FTPUtil.uploadFile(Lists.newArrayList(targetFile));
                 }catch (IOException e){
-                    logger.error("上传二维码异常", e);
+                    log.error("上传二维码异常", e);
                 }
-                logger.info("qrPath:" + qrPath);
+                log.info("qrPath:" + qrPath);
                 String qrUrl = PropertiesUtil.getProperty("ftp.server.http.prefix") + targetFile.getName();
                 resultMap.put("qrUrl", qrUrl);
                 return ServerResponse.createBySuccess(resultMap);
             case FAILED:
-                logger.error("支付宝下单失败!!!");
+                log.error("支付宝下单失败!!!");
                 return ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
             case UNKNOWN:
-                logger.error("系统异常，订单状态未知!!!");
+                log.error("系统异常，订单状态未知!!!");
                 return ServerResponse.createByErrorMessage(ResponseCode.ERROR.getDesc());
             default:
-                logger.error("不支持的交易状态，交易返回异常!!!");
+                log.error("不支持的交易状态，交易返回异常!!!");
                 return  ServerResponse.createByErrorMessage(ResponseCode.ILLEGAL_ARGUMENT.getDesc());
         }
     }
@@ -183,12 +185,12 @@ public class PayServiceImpl implements IPayService{
      */
     private void dumpResponse(AlipayResponse response) {
         if (response != null) {
-            logger.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
+            log.info(String.format("code:%s, msg:%s", response.getCode(), response.getMsg()));
             if (StringUtils.isNotEmpty(response.getSubCode())) {
-                logger.info(String.format("subCode:%s, subMsg:%s", response.getSubCode(),
+                log.info(String.format("subCode:%s, subMsg:%s", response.getSubCode(),
                         response.getSubMsg()));
             }
-            logger.info("body:" + response.getBody());
+            log.info("body:" + response.getBody());
         }
     }
 
