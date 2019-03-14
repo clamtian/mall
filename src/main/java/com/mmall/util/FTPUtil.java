@@ -2,9 +2,6 @@ package com.mmall.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -15,7 +12,6 @@ import java.util.List;
  */
 @Slf4j
 public class FTPUtil {
-
 
     private static String ftpIp = PropertiesUtil.getProperty("ftp.server.ip");
     private static String ftpUser = PropertiesUtil.getProperty("ftp.user");

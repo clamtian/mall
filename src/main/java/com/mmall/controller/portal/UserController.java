@@ -59,7 +59,7 @@ public class UserController {
      */
     @RequestMapping(value = "register.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<String> register(User user){
+    public ServerResponse<String> register(User user){//Mvc数据绑定，将前台信息包装为User传入
         ServerResponse response = iUserService.register(user);
         return response;
     }

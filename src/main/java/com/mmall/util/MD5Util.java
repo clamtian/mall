@@ -9,7 +9,6 @@ public class MD5Util {
         StringBuffer resultSb = new StringBuffer();
         for (int i = 0; i < b.length; i++)
             resultSb.append(byteToHexString(b[i]));
-
         return resultSb.toString();
     }
 
@@ -35,7 +34,7 @@ public class MD5Util {
             resultString = new String(origin);
             MessageDigest md = MessageDigest.getInstance("MD5");
             if (charsetname == null || "".equals(charsetname))
-                resultString = byteArrayToHexString(md.digest(resultString.getBytes()));
+                resultString = byteArrayToHexString(md.digest(resultString.getBytes()));//MD5加密，返回byte数组
             else
                 resultString = byteArrayToHexString(md.digest(resultString.getBytes(charsetname)));
         } catch (Exception exception) {
@@ -44,10 +43,9 @@ public class MD5Util {
     }
 
     public static String MD5EncodeUtf8(String origin) {
-        origin = origin + PropertiesUtil.getProperty("password.salt", "");
+        origin = origin + PropertiesUtil.getProperty("password.salt", "");//添加盐值
         return MD5Encode(origin, "utf-8");
     }
-
 
     private static final String hexDigits[] = {"0", "1", "2", "3", "4", "5",
             "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"};

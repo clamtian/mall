@@ -50,7 +50,7 @@ public class UserServiceImpl implements IUserService{
      * @return
      */
     @Override
-    public ServerResponse<String> register(User user) {//Mvc数据绑定，将前台信息包装为User传入
+    public ServerResponse<String> register(User user) {
         ServerResponse validResponse = this.checkValid(user.getUsername(), Const.USERNAME);
         if(!validResponse.isSuccess()){//用户名校验失败
             return validResponse;
