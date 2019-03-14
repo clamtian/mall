@@ -3,6 +3,9 @@
  */
 public class test {
     public static void main(String[] args){
-        String s = "asdfg";
+        Double a = 0.2;
+        Double b = 0.4;
+        Double c = a + b;
+        System.out.println(c);
     }
 }

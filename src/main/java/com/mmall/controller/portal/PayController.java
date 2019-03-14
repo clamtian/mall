@@ -10,8 +10,6 @@ import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IPayService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -63,7 +61,7 @@ public class PayController {
     @ResponseBody
     public ServerResponse<Boolean> queryOrderPayStatus(HttpSession session, Long orderNo){
         User user = (User)session.getAttribute(Const.CURRENT_USER);
-        if(user ==null){
+        if(user == null){
             return ServerResponse.createByErrorMessageCode(ResponseCode.NEED_LOGIN.getDesc(),ResponseCode.NEED_LOGIN.getCode());
         }
         ServerResponse serverResponse = iPayService.queryOrderPayStatus(user.getId(),orderNo);
