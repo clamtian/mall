@@ -1,17 +1,22 @@
 package com.mmall.controller.portal;
 
 import com.mmall.common.Const;
+import com.mmall.common.RedisPool;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
+import com.mmall.util.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpSession;
+import java.util.UUID;
 
 /**
  * Created by lucky on 2019/1/6.
@@ -23,6 +28,8 @@ public class UserController {
 
     @Autowired
     private IUserService iUserService;
+    @Autowired
+    private Jedis jedis;
     /**
      * 用户登录模块
      * @param username
@@ -35,7 +42,10 @@ public class UserController {
     public ServerResponse<User> login(String username, String password, HttpSession session){
         ServerResponse<User> response = iUserService.login(username, password);
         if(response.isSuccess()){
-            session.setAttribute(Const.CURRENT_USER, response.getData());
+            String token = UUID.randomUUID().toString();
+            jedis = RedisPool.getJedis();
+            jedis.set("SESSION:" + token , username);
+            jedis.expire("SESSION:" + token, Integer.parseInt(PropertiesUtil.getProperty("redis.expire")));
         }
         return response;
     }
