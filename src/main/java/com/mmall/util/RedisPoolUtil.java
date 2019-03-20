@@ -12,4 +12,7 @@ public class RedisPoolUtil {
         jedis.set(key, value);
         return true;
     }
+//    public static void main(String[] args){
+//        set("123","456");
+//    }
 }

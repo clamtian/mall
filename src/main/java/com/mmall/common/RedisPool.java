@@ -62,4 +62,9 @@ public class RedisPool {
             jedis.close();
         }
     }
+//    public static void main(String[] args){
+//        Jedis jedis = getJedis();
+//        jedis.set("123", "456");
+//        returnResource(jedis);
+//    }
 }

@@ -6,7 +6,9 @@ import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
 import com.mmall.service.IUserService;
+import com.mmall.util.CookieUtil;
 import com.mmall.util.PropertiesUtil;
+import com.mmall.util.RedisPoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import redis.clients.jedis.Jedis;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
@@ -28,8 +32,6 @@ public class UserController {
 
     @Autowired
     private IUserService iUserService;
-    @Autowired
-    private Jedis jedis;
     /**
      * 用户登录模块
      * @param username
@@ -39,13 +41,15 @@ public class UserController {
      */
     @RequestMapping(value = "login.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> login(String username, String password, HttpSession session){
+    public ServerResponse<User> login(HttpServletRequest request, HttpServletResponse httpResponse, String username, String password, HttpSession session){
         ServerResponse<User> response = iUserService.login(username, password);
         if(response.isSuccess()){
-            String token = UUID.randomUUID().toString();
-            jedis = RedisPool.getJedis();
-            jedis.set("SESSION:" + token , username);
-            jedis.expire("SESSION:" + token, Integer.parseInt(PropertiesUtil.getProperty("redis.expire")));
+            CookieUtil.writeLoginToken(httpResponse, session.getId());
+            String s = CookieUtil.readCookie(request);
+            System.out.println(s);
+            session.setAttribute(Const.CURRENT_USER, response.getData());
+            //RedisPoolUtil.set("SESSION:" + session.getId() , username);
+//            jedis.expire("SESSION:" + token, Integer.parseInt(PropertiesUtil.getProperty("redis.expire")));
         }
         return response;
     }
@@ -81,11 +85,14 @@ public class UserController {
      */
     @RequestMapping(value = "get_user_info.do",method = RequestMethod.POST)
     @ResponseBody
-    public ServerResponse<User> getUserInfo(HttpSession session){
+    public ServerResponse<User> getUserInfo(HttpServletRequest request, HttpSession session){
         User user = (User) session.getAttribute(Const.CURRENT_USER);//获得当前登录用户
+        String s = CookieUtil.readCookie(request);
+        System.out.println(s);
         if(user != null){//将User作为Data传回前台
             return ServerResponse.createBySuccess(user);
         }
+
         return ServerResponse.createByErrorMessage(ResponseCode.NEED_LOGIN.getDesc());
     }
 
