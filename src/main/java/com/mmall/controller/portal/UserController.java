@@ -1,7 +1,6 @@
 package com.mmall.controller.portal;
 
 import com.mmall.common.Const;
-import com.mmall.common.RedisPool;
 import com.mmall.common.ResponseCode;
 import com.mmall.common.ServerResponse;
 import com.mmall.pojo.User;
@@ -10,17 +9,14 @@ import com.mmall.util.CookieUtil;
 import com.mmall.util.PropertiesUtil;
 import com.mmall.util.RedisPoolUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import redis.clients.jedis.Jedis;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
-import java.util.UUID;
 
 /**
  * Created by lucky on 2019/1/6.
@@ -48,8 +44,8 @@ public class UserController {
             String s = CookieUtil.readCookie(request);
             System.out.println(s);
             session.setAttribute(Const.CURRENT_USER, response.getData());
-            //RedisPoolUtil.set("SESSION:" + session.getId() , username);
-//            jedis.expire("SESSION:" + token, Integer.parseInt(PropertiesUtil.getProperty("redis.expire")));
+            RedisPoolUtil.set("SESSION:" + session.getId() , username);
+            RedisPoolUtil.expire("SESSION:" + session.getId(), Integer.parseInt(PropertiesUtil.getProperty("redisexpire")));
         }
         return response;
     }

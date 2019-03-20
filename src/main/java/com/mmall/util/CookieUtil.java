@@ -14,8 +14,8 @@ import javax.servlet.http.HttpServletResponse;
 @Slf4j
 public class CookieUtil {
 
-    public final static String SSO_NAME = "SSONAME";
-    public final static String SSO_DOMAIN = ".clamtian.com";
+    public final static String SSO_NAME = PropertiesUtil.getProperty("ssoname");
+    public final static String SSO_DOMAIN = "ssodomain";
 
     public static void writeLoginToken(HttpServletResponse response,String token){
         Cookie ck = new Cookie(SSO_NAME,token);
